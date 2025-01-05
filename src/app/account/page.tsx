@@ -11,7 +11,6 @@ export default async function AccountPage() {
     return null
   }
 
-  console.log("user session: ", session.user)
   const user = await getUserDAO(session.user.id)
 
   return (

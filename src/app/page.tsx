@@ -1,7 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { signIn } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/utils";
-import Image from "next/image";
 import Link from "next/link";
 import { logoutAction } from "./auth/login/actions";
 

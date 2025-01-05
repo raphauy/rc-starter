@@ -74,6 +74,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       if (!existingUser) return token;
 
+      //console.log("JWT token: ", token);
+
       token.name = existingUser.name
       token.email = existingUser.email
       token.role = existingUser.role
