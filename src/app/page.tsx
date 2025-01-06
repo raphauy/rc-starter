@@ -14,6 +14,9 @@ export default async function Home() {
               <form action={logoutAction}>
                 <Button type="submit" variant="secondary" className="w-full">Cerrar sesión</Button>
               </form>
+              <Link href="/admin">
+                <Button>Admin</Button>
+              </Link>
             </div>
           ) : (
             <Link href="/auth/login">
