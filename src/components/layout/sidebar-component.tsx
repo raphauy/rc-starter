@@ -29,6 +29,12 @@ export function SidebarComponent() {
 
   if (!menu) return null
 
+  const handleMenuClick = () => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }
+
   return (
     <>
       <Button
@@ -49,7 +55,7 @@ export function SidebarComponent() {
               <SidebarGroup key={group.name}>
                 <SidebarGroupLabel>{group.name}</SidebarGroupLabel>
                 <SidebarGroupContent>
-                  {getMenuItems(group.items, pathname)}
+                  {getMenuItems(group.items, pathname, handleMenuClick)}
                 </SidebarGroupContent>
               </SidebarGroup>
             ))
@@ -60,7 +66,7 @@ export function SidebarComponent() {
   )
 } 
 
-function getMenuItems(menuItems: MenuItem[], pathname: string) {
+function getMenuItems(menuItems: MenuItem[], pathname: string, onMenuClick: () => void) {
   return (
     <SidebarMenu>
     {menuItems.map((item) => (
@@ -69,6 +75,7 @@ function getMenuItems(menuItems: MenuItem[], pathname: string) {
             asChild
             isActive={pathname === item.href}
             tooltip={item.name}
+            onClick={onMenuClick}
           >
             <Link href={item.href}>
               {item.icon}
@@ -82,6 +89,7 @@ function getMenuItems(menuItems: MenuItem[], pathname: string) {
                   <SidebarMenuSubButton
                     asChild
                     isActive={pathname === subItem.href}
+                    onClick={onMenuClick}
                   >
                     <Link href={subItem.href}>
                       {subItem.icon}
