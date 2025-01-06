@@ -2,6 +2,11 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { auth } from "./auth"
 
+export type MenuGroup = {
+  name: string
+  items: MenuItem[]
+}
+
 export type MenuItem = {
   name: string
   icon?: React.ReactNode
