@@ -1,13 +1,15 @@
 "use client"
 
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { signOut, useSession } from "next-auth/react"
-import { Button } from "../ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { cn, MenuItem } from "@/lib/utils"
+import { Role } from "@prisma/client"
+import { Home, LayoutDashboard, Monitor, Moon, Settings, Sun } from "lucide-react"
+import { useSession } from "next-auth/react"
 import { useTheme } from "next-themes"
-import { Home, LogOut, Monitor, Moon, Settings, Sun } from "lucide-react"
 import Link from "next/link"
-import { cn } from "@/lib/utils"
+import { Button } from "../ui/button"
+import { LogoutButtonForDropdown } from "./logout-button"
 
 export function UserButton() {
   const { data: session } = useSession()
@@ -34,28 +36,30 @@ export function UserButton() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/account" className="flex items-center justify-between w-full cursor-pointer">
-            <span>Perfil de usuario</span>
-            <Settings className="h-4 w-4" />
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
           <Link href="/" className="flex items-center justify-between w-full cursor-pointer">
             <span>Inicio</span>
             <Home className="h-4 w-4" />
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/account" className="flex items-center justify-between w-full cursor-pointer">
+            <span>Perfil de usuario</span>
+            <Settings className="h-4 w-4" />
+          </Link>
+        </DropdownMenuItem>
+        {getCustomMenuItems(session.user.role).map((item) => (
+          <DropdownMenuItem asChild key={item.name}>
+            <Link href={item.href} className="flex items-center justify-between w-full cursor-pointer">
+              <span>{item.name}</span>
+              {item.icon}
+            </Link>
+          </DropdownMenuItem>
+        ))}
         <DropdownMenuSeparator />
         {getThemeItem(theme || "system", setTheme)}
         <DropdownMenuSeparator />
-        <DropdownMenuItem 
-          className="text-red-600 dark:text-red-400 cursor-pointer"
-          onClick={() => signOut()}
-        >
-          <div className="flex items-center justify-between w-full">
-            <span>Cerrar sesión</span>
-            <LogOut className="h-4 w-4" />
-          </div>
+        <DropdownMenuItem className="text-red-600 dark:text-red-400 cursor-pointer">
+          <LogoutButtonForDropdown redirectTo="/" />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -109,4 +113,17 @@ function getThemeItem(theme: string, setTheme: (theme: string) => void) {
       </div>
     </DropdownMenuItem>
   )
+}
+
+function getCustomMenuItems(role: Role): MenuItem[] {
+  if (role === "ADMIN") {
+    return [
+      {
+        name: "Admin",
+        href: "/admin",
+        icon: <LayoutDashboard className="h-4 w-4" />
+      }
+    ]
+  }
+  return []
 }

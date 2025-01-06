@@ -1,3 +1,4 @@
+import { MenuItem } from "@/lib/utils"
 import {
   Users,
   Settings,
@@ -7,16 +8,6 @@ import {
   User
 } from "lucide-react"
 
-export type MenuItem = {
-  name: string
-  icon?: React.ReactNode
-  href: string
-  subItems?: {
-    label: string
-    icon?: React.ReactNode
-    href: string
-  }[]
-}
 
 export const adminMenu: MenuItem[] = [
   {

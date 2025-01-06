@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/utils";
 import Link from "next/link";
-import { logoutAction } from "./auth/login/actions";
+import { logoutAction } from "./(auth)/login/actions";
+import { LogoutButtonForButton } from "@/components/layout/logout-button";
 
 export default async function Home() {
   const user = await getCurrentUser()
@@ -11,19 +12,24 @@ export default async function Home() {
           user ? (
             <div className="space-y-10">
               <h1>Bienvenido, {user.name || user.email}</h1>
-              <form action={logoutAction}>
-                <Button type="submit" variant="secondary" className="w-full">Cerrar sesión</Button>
-              </form>
-              <Link href="/admin">
-                <Button>Admin</Button>
-              </Link>
+
+              <div>
+              {user.role === "ADMIN" && (
+                <Link href="/admin">
+                  <Button className="w-full">Admin</Button>
+                </Link>
+              )}
+              </div>
+              <LogoutButtonForButton redirectTo="/" label="Cerrar sesión" />
             </div>
           ) : (
-            <Link href="/auth/login">
+            <Link href="/login">
               <Button>Login</Button>
             </Link>
           )
         }
+
+
       </main>
   );
 }

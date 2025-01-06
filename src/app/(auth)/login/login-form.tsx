@@ -9,14 +9,15 @@ import { cn } from "@/lib/utils";
 import { LoginSchema } from "@/services/login-services";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { UAParser } from 'ua-parser-js';
 import * as z from "zod";
 import { FormError } from "./_components/form-error";
 import { FormSuccess } from "./_components/form-success";
 import { loginAction } from "./actions";
-import { UAParser } from 'ua-parser-js';
+import { useSession } from "next-auth/react"
 
 
 type Props = {
@@ -40,6 +41,8 @@ export function LoginForm({ requestedEmail }: Props) {
   const [isPending, startTransition] = useTransition()
   const [resendSeconds, setResendSeconds] = useState(-1)
   const [shouldResend, setShouldResend] = useState(false);
+  const { update } = useSession()
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -95,7 +98,8 @@ export function LoginForm({ requestedEmail }: Props) {
       }
 
       if (!data?.success && !data?.error && !data?.code) {
-        window.location.reload();
+        update()
+        router.push("/")
       }
     });
   };
