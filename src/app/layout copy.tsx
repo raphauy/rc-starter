@@ -15,9 +15,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <div className="min-h-screen h-full flex flex-col">
             <Header />
-            <main className="p-2 w-full h-[calc(100vh-65px)] overflow-hidden">
-              {children}
-            </main>
+            <div className="h-[calc(100vh-65px)] overflow-hidden w-full">
+              <SidebarProvider className="h-full flex">
+                <div className="flex h-full w-full">
+                  <SidebarComponent />
+                  <main className="p-2 w-full flex-1 overflow-auto mt-10 md:mt-0">
+                    {children}
+                  </main>
+                </div>
+              </SidebarProvider>
+            </div>
           </div>
         </Providers>
       </body>

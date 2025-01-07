@@ -1,21 +1,21 @@
 "use client"
 
+import { adminMenu } from "@/app/admin/admin-menu"
+import { Button } from "@/components/ui/button"
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSkeleton, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
+import { MenuGroup, MenuItem } from "@/lib/utils"
+import { Loader, Menu } from "lucide-react"
+import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarTrigger, SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton, useSidebar } from "@/components/ui/sidebar"
-import { adminMenu } from "@/app/admin/admin-menu"
-import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
-import { MenuGroup, MenuItem } from "@/lib/utils"
-import { Menu } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { SheetTitle } from "@/components/ui/sheet"
+import { Skeleton } from "../ui/skeleton"
 
 export function SidebarComponent() {
   const pathname = usePathname()
   const { data: session } = useSession()
   const userRole = session?.user?.role
-  const { isMobile, openMobile, setOpenMobile } = useSidebar()
+  const { isMobile, setOpenMobile } = useSidebar()
 
   const [menu, setMenu] = useState<MenuGroup[] | null>(null)
 
@@ -27,7 +27,7 @@ export function SidebarComponent() {
     }
   }, [userRole, pathname])
 
-  if (!menu) return null
+  if (!menu) return <SidebarSkeleton />
 
   const handleMenuClick = () => {
     if (isMobile) {
@@ -103,5 +103,62 @@ function getMenuItems(menuItems: MenuItem[], pathname: string, onMenuClick: () =
         </SidebarMenuItem>
       ))}
     </SidebarMenu>
+  )
+}
+
+function SidebarSkeleton() {
+  return (
+    <div className="h-[calc(100vh-84px)] w-[16rem] ">
+      <div className="rounded-xl bg-gray-50 border mr-4 h-full">
+        <SidebarHeader className="flex items-end mr-0.5">
+          <Skeleton className="h-6 w-6" />
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>
+              <Skeleton className="h-4 w-[100px]" />
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuSkeleton showIcon />
+                </SidebarMenuItem>
+                
+                <SidebarMenuItem>
+                  <SidebarMenuSkeleton showIcon />
+                </SidebarMenuItem>
+                <SidebarMenuItem className="ml-4">
+                  <SidebarMenuSkeleton />
+                </SidebarMenuItem>
+                <SidebarMenuItem className="ml-4">
+                  <SidebarMenuSkeleton />
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuSkeleton showIcon />
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuSkeleton showIcon />
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          <SidebarGroup className="mt-4">
+            <SidebarGroupLabel>
+              <Skeleton className="h-4 w-[80px]" />
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuSkeleton showIcon />
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </div>
+    </div>
   )
 }

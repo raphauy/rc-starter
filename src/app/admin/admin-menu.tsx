@@ -16,12 +16,8 @@ export const adminMenu: MenuGroup[] = [
       href: "/admin/users",
       subItems:[
         {
-          label: "Crear",
-          href: "/admin"
-        },
-        {
-          label: "Listar",
-          href: "/admin/users"
+          label: "Sesiones",
+          href: "/admin/sessions"
         }
       ]
     },

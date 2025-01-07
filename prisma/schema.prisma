@@ -93,14 +93,15 @@ model OTPCode {
 
 model OTPConfirmation {
   id String @id @default(cuid())
+  
+  deviceId String                             // gennext: show.column
+  deviceName String?                          // gennext: show.column
+  lastUsed DateTime @default(now())           // gennext: show.column
+  ipAddress String?                           // gennext: show.column
+
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  deviceId String  // Identificador único del dispositivo
-  deviceName String? // Nombre del dispositivo (ej: "Chrome en Windows")
-  lastUsed DateTime @default(now()) // Última vez que se usó esta sesión
-  ipAddress String? // Dirección IP
-  
-  @@unique([userId, deviceId])
-  @@map("otp_confirmations")
+
+  @@unique([userId, deviceId])                // gennext: skip.list
+  @@map("otp_confirmations")                  // gennext: skip.list
 }
