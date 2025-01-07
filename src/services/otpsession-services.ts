@@ -4,7 +4,6 @@ import { UserDAO } from "./user-services"
 
 export type OTPSessionDAO = {
 	id: string
-	sessionTokenId: string | null
   tokenCheckExpiration: Date | null
 	deviceBrowser: string | null
 	deviceOs: string | null
@@ -99,25 +98,6 @@ export async function getFullOTPSessionDAO(id: string) {
   return found as OTPSessionDAO
 }
     
-export async function updateOTPSessionToken(userId: string, sessionTokenId: string, tokenCheckExpiration: Date) {
-  const lastSession = await prisma.oTPSession.findFirst({
-    where: {
-      userId,
-      sessionTokenId: null
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  });
-
-  if (lastSession) {
-    return await prisma.oTPSession.update({
-      where: { id: lastSession.id },
-      data: { sessionTokenId, tokenCheckExpiration }
-    });
-  }
-}
-
 export async function updateOTPSessionTokenCheckExpiration(otpSessionId: string, tokenCheckExpiration: Date) {
   try {
     const updated = await prisma.oTPSession.update({
