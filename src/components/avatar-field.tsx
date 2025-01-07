@@ -11,10 +11,10 @@ import { OurFileRouter } from '@/app/api/uploadthing/core'
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>()
 
-interface AvatarFieldProps {
-  label?: string
-  description?: string
-  imageUrl?: string
+type Props = {
+  label: string
+  description: string
+  imageUrl: string | null | undefined
   onUpdate: (url: string) => Promise<boolean>
 }
 
@@ -23,9 +23,9 @@ export function AvatarField({
   description = "Este es tu avatar.",
   imageUrl,
   onUpdate
-}: AvatarFieldProps) {
+}: Props) {
   const { toast } = useToast()
-  const [avatarUrl, setAvatarUrl] = React.useState(imageUrl)
+  const [avatarUrl, setAvatarUrl] = React.useState<string | null | undefined>(imageUrl)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
@@ -101,7 +101,7 @@ export function AvatarField({
                 onClick={handleClick}
               >
                 <AvatarImage 
-                  src={avatarUrl} 
+                  src={avatarUrl || undefined} 
                   className="object-cover"
                   alt="Avatar"
                 />

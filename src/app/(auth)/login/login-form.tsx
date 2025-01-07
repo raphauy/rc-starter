@@ -16,17 +16,18 @@ import { UAParser } from 'ua-parser-js';
 import * as z from "zod";
 import { FormError } from "./_components/form-error";
 import { FormSuccess } from "./_components/form-success";
-import { loginAction } from "./actions";
+import { DeviceInfo, loginAction } from "./actions";
 import { useSession } from "next-auth/react"
 
+type IpData = {
+  ip: string
+  city: string
+  country_name: string
+}
 
 type Props = {
   requestedEmail?: string
 }
-
-const generateDeviceId = () => {
-  return `${navigator.userAgent}-${window.screen.width}x${window.screen.height}-${new Date().getTimezoneOffset()}`;
-};
 
 export function LoginForm({ requestedEmail }: Props) {
 
@@ -51,19 +52,31 @@ export function LoginForm({ requestedEmail }: Props) {
     },
   });
 
-  const getDeviceInfo = async () => {
+  async function getDeviceInfo(): Promise<DeviceInfo> {
     const parser = new UAParser();
     const result = parser.getResult();
     
-    // Opción 2: usando cloudflare
-    const ipResponse = await fetch('https://1.1.1.1/cdn-cgi/trace');
-    const ipData = await ipResponse.text();
-    const ip = ipData.split('\n').find(line => line.startsWith('ip='))?.split('=')[1];
+    let ip = 'unknown';
+    let city = 'unknown';
+    let country = 'unknown';
+    try {
+      const ipResponse = await fetch('https://ipapi.co/json/', { 
+        signal: AbortSignal.timeout(5000)
+      });
+      const ipData: IpData = await ipResponse.json();
+      ip = ipData.ip || 'unknown';
+      city = ipData.city || 'unknown';
+      country = ipData.country_name || 'unknown';
+    } catch (error) {
+      console.error('Error al obtener IP:', error);
+    }
     
     return {
-      deviceId: generateDeviceId(),
-      deviceName: `${result.browser.name} en ${result.os.name}`,
-      ipAddress: ip
+      deviceBrowser: result.browser.name,
+      deviceOs: result.os.name,
+      ipAddress: ip,
+      city,
+      country
     };
   };
 

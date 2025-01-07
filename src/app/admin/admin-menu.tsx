@@ -17,7 +17,7 @@ export const adminMenu: MenuGroup[] = [
       subItems:[
         {
           label: "Sesiones",
-          href: "/admin/sessions"
+          href: "/admin/otpsessions"
         }
       ]
     },

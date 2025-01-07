@@ -29,7 +29,7 @@ model User {
   role          Role      @default(GUEST)           // gennext: show.column
   accounts      Account[]                           // gennext: skip.list
   sessions      Session[]                           // gennext: skip.list
-  otpConfirmations OTPConfirmation[]                // gennext: skip.list
+  otpConfirmations OTPSession[]                     // gennext: skip.list
 
   createdAt DateTime @default(now())                // gennext: skip.zod
   updatedAt DateTime @updatedAt                     // gennext: skip.zod show.column
@@ -91,17 +91,21 @@ model OTPCode {
   @@map("otp_codes")
 }
 
-model OTPConfirmation {
+model OTPSession {
   id String @id @default(cuid())
-  
-  deviceId String                             // gennext: show.column
-  deviceName String?                          // gennext: show.column
-  lastUsed DateTime @default(now())           // gennext: show.column
+
+  tokenCheckExpiration DateTime?              // gennext: show.column
+  deviceBrowser String?                       // gennext: show.column
+  deviceOs String?                            // gennext: show.column
   ipAddress String?                           // gennext: show.column
+  city String?                                // gennext: show.column
+  country String?                             // gennext: show.column
+
+  createdAt DateTime @default(now())          // gennext: show.column skip.zod
+  updatedAt DateTime @updatedAt               // gennext: show.column skip.zod
 
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, deviceId])                // gennext: skip.list
-  @@map("otp_confirmations")                  // gennext: skip.list
+  @@map("otp_sessions")                  // gennext: skip.list skip.zod
 }

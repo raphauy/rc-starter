@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
-import { deleteUserAction, createOrUpdateUserAction, getUserDAOAction } from "./user-actions"
-import { userSchema, UserFormValues } from '@/services/user-services'
+import { deleteOTPSessionAction, createOrUpdateOTPSessionAction, getOTPSessionDAOAction } from "./otpsession-actions"
+import { oTPSessionSchema, OTPSessionFormValues } from '@/services/otpsession-services'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -16,24 +16,19 @@ type Props= {
   closeDialog: () => void
 }
 
-export function UserForm({ id, closeDialog }: Props) {
-  const form = useForm<UserFormValues>({
-    resolver: zodResolver(userSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      image: "",
-      role: "GUEST",
-    },
+export function OTPSessionForm({ id, closeDialog }: Props) {
+  const form = useForm<OTPSessionFormValues>({
+    resolver: zodResolver(oTPSessionSchema),
+    defaultValues: {},
     mode: "onChange",
   })
   const [loading, setLoading] = useState(false)
 
-  const onSubmit = async (data: UserFormValues) => {
+  const onSubmit = async (data: OTPSessionFormValues) => {
     setLoading(true)
     try {
-      await createOrUpdateUserAction(id ? id : null, data)
-      toast({ title: id ? "User updated" : "User created" })
+      await createOrUpdateOTPSessionAction(id ? id : null, data)
+      toast({ title: id ? "OTPSession updated" : "OTPSession created" })
       closeDialog()
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" })
@@ -44,15 +39,18 @@ export function UserForm({ id, closeDialog }: Props) {
 
   useEffect(() => {
     if (id) {
-      getUserDAOAction(id).then((data) => {
+      getOTPSessionDAOAction(id).then((data) => {
         if (data) {
-          form.reset(data)
-        }
-        Object.keys(form.getValues()).forEach((key: any) => {
-          if (form.getValues(key) === null) {
-            form.setValue(key, "")
+          const formData = {
+            userId: data.userId,
+            deviceBrowser: data.deviceBrowser || undefined,
+            deviceOs: data.deviceOs || undefined,
+            ipAddress: data.ipAddress || undefined,
+            city: data.city || undefined,
+            country: data.country || undefined,
           }
-        })
+          form.reset(formData)
+        }
       })
     }
   }, [form, id])
@@ -64,12 +62,16 @@ export function UserForm({ id, closeDialog }: Props) {
           
           <FormField
             control={form.control}
-            name="name"
+            name="deviceBrowser"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>DeviceBrowser</FormLabel>
                 <FormControl>
-                  <Input placeholder="User's name" {...field} value={field.value || ""} />
+                  <Input 
+                    placeholder="OTPSession's deviceBrowser" 
+                    {...field} 
+                    value={field.value || ""} 
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -79,12 +81,12 @@ export function UserForm({ id, closeDialog }: Props) {
       
           <FormField
             control={form.control}
-            name="email"
+            name="deviceOs"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>DeviceOs</FormLabel>
                 <FormControl>
-                  <Input placeholder="User's email" {...field} value={field.value || ""} />
+                  <Input placeholder="OTPSession's deviceOs" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -94,12 +96,12 @@ export function UserForm({ id, closeDialog }: Props) {
       
           <FormField
             control={form.control}
-            name="image"
+            name="ipAddress"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Image</FormLabel>
+                <FormLabel>IpAddress</FormLabel>
                 <FormControl>
-                  <Input placeholder="User's image" {...field} value={field.value || ""} />
+                  <Input placeholder="OTPSession's ipAddress" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -109,12 +111,42 @@ export function UserForm({ id, closeDialog }: Props) {
       
           <FormField
             control={form.control}
-            name="role"
+            name="city"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Role</FormLabel>
+                <FormLabel>City</FormLabel>
                 <FormControl>
-                  <Input placeholder="User's role" {...field} value={field.value || ""} />
+                  <Input placeholder="OTPSession's city" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+      
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Country</FormLabel>
+                <FormControl>
+                  <Input placeholder="OTPSession's country" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+      
+          <FormField
+            control={form.control}
+            name="userId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>UserId</FormLabel>
+                <FormControl>
+                  <Input placeholder="OTPSession's userId" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -134,15 +166,15 @@ export function UserForm({ id, closeDialog }: Props) {
   )
 }
 
-export function DeleteUserForm({ id, closeDialog }: Props) {
+export function DeleteOTPSessionForm({ id, closeDialog }: Props) {
   const [loading, setLoading] = useState(false)
 
   async function handleDelete() {
     if (!id) return
     setLoading(true)
-    deleteUserAction(id)
+    deleteOTPSessionAction(id)
     .then(() => {
-      toast({title: "User deleted" })
+      toast({title: "OTPSession deleted" })
     })
     .catch((error) => {
       toast({title: "Error", description: error.message, variant: "destructive"})

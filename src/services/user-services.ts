@@ -4,20 +4,20 @@ import { Role } from "@prisma/client"
 
 export type UserDAO = {
 	id: string
-	name: string | undefined
+	name: string | null
 	email: string
-	emailVerified: Date | undefined
-	image: string | undefined
+	emailVerified: Date | null
+	image: string | null | undefined
 	role: Role
 	createdAt: Date
 	updatedAt: Date
 }
 
 export const userSchema = z.object({
-	name: z.string().optional(),
+	name: z.string().nullable().optional(),
 	email: z.string().email(),
 	role: z.nativeEnum(Role),
-	image: z.string().optional(),	
+	image: z.string().nullable().optional(),	
 })
 
 export type UserFormValues = z.infer<typeof userSchema>

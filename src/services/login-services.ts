@@ -1,3 +1,4 @@
+import { DeviceInfo } from "@/app/(auth)/login/actions";
 import { prisma } from "@/lib/db"
 import { z } from "zod";
 
@@ -8,48 +9,6 @@ export const LoginSchema = z.object({
     code: z.optional(z.string()),
 });
   
-export async function getOTPConfirmationByUserIdAndDeviceId(userId: string, deviceId: string) {
-    
-    const otpConfirmation = await prisma.oTPConfirmation.findUnique({
-        where: {
-            userId_deviceId: {
-                userId,
-                deviceId
-            }
-        }
-    });
-
-    return otpConfirmation;
-}
-
-export async function createOTPConfirmation(data: {
-  userId: string;
-  deviceId: string;
-  deviceName?: string;
-  ipAddress?: string;
-}) {
-  return prisma.oTPConfirmation.create({
-    data: {
-      ...data,
-      lastUsed: new Date()
-    }
-  });
-}
-
-export async function deleteOTPConfirmation(id: string) {
-    
-    const otpConfirmation = await prisma.oTPConfirmation.delete({
-        where: {
-            id
-        }
-    });
-
-    return otpConfirmation;
-}
-
-  
-
-
 
 /**
  * 
@@ -152,33 +111,4 @@ export const getUserByEmail = async (email: string) => {
         return null
     }
 };
-
-export async function getOTPConfirmationByUserIdAndDevice(
-  userId: string, 
-  deviceId: string
-) {
-  return prisma.oTPConfirmation.findUnique({
-    where: {
-      userId_deviceId: {
-        userId,
-        deviceId
-      }
-    }
-  });
-}
-
-export async function getActiveConfirmations(userId: string) {
-  return prisma.oTPConfirmation.findMany({
-    where: {
-      userId,
-      lastUsed: {
-        gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-      }
-    },
-    orderBy: {
-      lastUsed: 'desc'
-    }
-  });
-}
-
 
