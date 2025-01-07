@@ -94,7 +94,6 @@ export const columns: ColumnDef<OTPSessionDAO>[] = [
         <div>
           <p>Creado: {formatWhatsAppStyle(data.createdAt)}</p>
           <p>Actualizado: {formatWhatsAppStyle(data.updatedAt)}</p>
-          <p>Token: {data.sessionTokenId}</p>
           <p>Expira: {expiration}</p>
         </div>
       )
