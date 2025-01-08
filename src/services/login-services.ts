@@ -1,4 +1,5 @@
 import { DeviceInfo } from "@/app/(auth)/login/actions";
+import { auth, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/db"
 import { z } from "zod";
 
@@ -111,4 +112,12 @@ export const getUserByEmail = async (email: string) => {
         return null
     }
 };
+
+export async function logout() {
+    const session = await auth()
+    if (session) {
+        await signOut()
+    }
+}
+
 

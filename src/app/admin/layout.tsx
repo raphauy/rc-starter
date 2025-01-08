@@ -1,10 +1,20 @@
 import "@/app/globals.css"
 import { SidebarComponent } from "@/components/layout/sidebar-component"
 import { SidebarProvider } from "@/components/ui/sidebar"
-import { Loader } from "lucide-react"
-import { Suspense } from "react"
+import { auth } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+
+  const session= await auth()
+
+  if (!session) {
+    return redirect("/login")
+  }
+
+  if (session.user.role !== "ADMIN") {
+    return redirect("/")
+  }
 
   return (
     <div className="w-full h-full">

@@ -100,6 +100,14 @@ export async function getFullOTPSessionDAO(id: string) {
 }
     
 export async function updateOTPSessionTokenCheckExpiration(otpSessionId: string, tokenCheckExpiration: Date) {
+  // check if otpSessionId exists
+  const otpSession = await prisma.oTPSession.findUnique({
+    where: {
+      id: otpSessionId
+    }
+  })
+  if (!otpSession) return null
+
   try {
     const updated = await prisma.oTPSession.update({
       where: {
@@ -109,7 +117,7 @@ export async function updateOTPSessionTokenCheckExpiration(otpSessionId: string,
     })
     return updated
   } catch (error) {
-    console.log("Error actualizando tokenCheckExpiration:", error)
+    console.log("Error actualizando tokenCheckExpiration")
     return null
   }
 }
