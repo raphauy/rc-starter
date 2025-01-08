@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db"
 import * as z from "zod"
 import { UserDAO } from "./user-services"
+import { revalidatePath } from "next/cache"
 
 export type OTPSessionDAO = {
 	id: string
@@ -128,4 +129,8 @@ export async function getLastOTPSession(userId: string): Promise<OTPSessionDAO |
       user: true
     }
   });
+}
+
+export async function revalidateOTPSessions() {
+  revalidatePath("/admin/otpsessions")
 }

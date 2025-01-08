@@ -5,6 +5,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { Role } from "@prisma/client"
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import { revalidatePath } from "next/cache"
 
 const TOKEN_SESSION_EXPIRATION_IN_MINUTES = 3
 
@@ -74,8 +75,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user, trigger }) {
       if (!token.sub) return token
 
-      console.log("trigger", trigger)
-
       // Capturar el otpSessionId del usuario cuando se inicia sesión
       if (user && (user as any).otpSessionId) {
         console.log("seteando otpSessionId", (user as any).otpSessionId)
@@ -120,7 +119,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       console.log("res", res)      
       if (res) {
         console.log("actualizando tokenCheckExpiration", tokenCheckExpiration.toISOString())
-        token.tokenCheckExpiration = tokenCheckExpiration.toISOString();
+        token.tokenCheckExpiration = tokenCheckExpiration.toISOString();                
       } else {
         console.log("No se encontró la sesión", token.otpSessionId);
         // TODO: Implementar lógica de logout si la sesión no existe

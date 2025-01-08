@@ -3,6 +3,8 @@ import { OTPSessionDialog } from "./otpsession-dialogs"
 import { DataTable } from "./otpsession-table"
 import { columns } from "./otpsession-columns"
 
+export const dynamic = 'force-dynamic'
+
 export default async function OTPSessionPage() {
   
   const data= await getFullOTPSessionsDAO()
