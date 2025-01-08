@@ -1,11 +1,10 @@
 import { prisma } from "@/lib/db"
 import { deleteOTPCode, getOTPCodeByEmail, getUserByEmail, getUserById, LoginSchema } from "@/services/login-services"
+import { updateOTPSessionTokenCheckExpiration } from "@/services/otpsession-services"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { Role } from "@prisma/client"
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { getLastOTPSession, updateOTPSessionTokenCheckExpiration } from "@/services/otpsession-services"
-import { revalidatePath } from "next/cache"
 
 const TOKEN_SESSION_EXPIRATION_IN_MINUTES = 3
 
@@ -72,17 +71,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return session;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (!token.sub) return token
+
+      console.log("trigger", trigger)
 
       // Capturar el otpSessionId del usuario cuando se inicia sesión
       if (user && (user as any).otpSessionId) {
         console.log("seteando otpSessionId", (user as any).otpSessionId)
         token.otpSessionId = (user as any).otpSessionId;
       }
-
-      const existingUser = await getUserById(token.sub)      
-      if (!existingUser) return token;
 
       // Si no hay otpSessionId, la sesión no es válida
       if (!token.otpSessionId) {
@@ -93,24 +91,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       // Verificar si necesitamos actualizar la expiración
       const now = new Date();
-      if (token.tokenCheckExpiration) {
+      if (token.tokenCheckExpiration && trigger !== "update") {
         const expirationDate = new Date(token.tokenCheckExpiration);
         const diffInMinutes = (expirationDate.getTime() - now.getTime()) / (1000 * 60);
         
-        console.log("Tiempo restante de la sesión:", {
-          expiration: expirationDate.toISOString(),
-          now: now.toISOString(),
-          minutosRestantes: diffInMinutes.toFixed(2)
-        });
+        // console.log("Tiempo restante de la sesión:", {
+        //   expiration: expirationDate.toISOString(),
+        //   now: now.toISOString(),
+        //   minutosRestantes: diffInMinutes.toFixed(2)
+        // });
         
         if (diffInMinutes > 0) {
           console.log("la sesión sigue vigente, faltan", diffInMinutes.toFixed(2), "minutos");
-          
-          // Siempre actualizamos los datos del usuario
-          token.name = existingUser.name;
-          token.email = existingUser.email;
-          token.role = existingUser.role;
-          token.picture = existingUser.image;
           
           return token;
         }
@@ -125,7 +117,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       // Actualizar la expiración de la sesión actual
       const res = await updateOTPSessionTokenCheckExpiration(token.otpSessionId, tokenCheckExpiration);
+      console.log("res", res)      
       if (res) {
+        console.log("actualizando tokenCheckExpiration", tokenCheckExpiration.toISOString())
         token.tokenCheckExpiration = tokenCheckExpiration.toISOString();
       } else {
         console.log("No se encontró la sesión", token.otpSessionId);
@@ -134,6 +128,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.tokenCheckExpiration = undefined;
         return token;
       }
+
+      const existingUser = await getUserById(token.sub)      
+      if (!existingUser) return token;
 
       // Siempre actualizamos los datos del usuario
       token.name = existingUser.name;

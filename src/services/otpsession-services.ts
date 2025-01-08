@@ -1,5 +1,5 @@
-import * as z from "zod"
 import { prisma } from "@/lib/db"
+import * as z from "zod"
 import { UserDAO } from "./user-services"
 
 export type OTPSessionDAO = {
@@ -77,7 +77,7 @@ export async function deleteOTPSession(id: string) {
 export async function getFullOTPSessionsDAO() {
   const found = await prisma.oTPSession.findMany({
     orderBy: {
-      id: 'desc'
+      updatedAt: 'desc'
     },
     include: {
 			user: true,

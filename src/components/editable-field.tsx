@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { useSession } from 'next-auth/react'
 
 interface EditableFieldProps {
   label: string
@@ -25,6 +26,7 @@ export function EditableField({
   const [value, setValue] = React.useState(initialValue)
   const [isPending, setIsPending] = React.useState(false)
   const { toast } = useToast()
+  const { update, data } = useSession()
   
   const hasChanges = value !== initialValue
   
@@ -36,6 +38,10 @@ export function EditableField({
         toast({
           title: label,
           description: "Tus cambios se han guardado correctamente.",
+        })
+        console.log("updating session", data)
+        update({
+          trigger: "update"
         })
       } else {
         toast({

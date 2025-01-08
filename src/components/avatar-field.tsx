@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Camera, Loader } from 'lucide-react'
 import { generateReactHelpers } from "@uploadthing/react"
 import { OurFileRouter } from '@/app/api/uploadthing/core'
+import { useSession } from 'next-auth/react'
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>()
 
@@ -18,12 +19,8 @@ type Props = {
   onUpdate: (url: string) => Promise<boolean>
 }
 
-export function AvatarField({
-  label = "Avatar",
-  description = "Este es tu avatar.",
-  imageUrl,
-  onUpdate
-}: Props) {
+export function AvatarField({ label = "Avatar", description = "Este es tu avatar.", imageUrl, onUpdate }: Props) {
+  const { update, data } = useSession()
   const { toast } = useToast()
   const [avatarUrl, setAvatarUrl] = React.useState<string | null | undefined>(imageUrl)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
@@ -37,6 +34,9 @@ export function AvatarField({
           toast({
             title: label,
             description: "Tu avatar se ha actualizado correctamente.",
+          })
+          update({
+            trigger: "update"
           })
         } else {
           toast({

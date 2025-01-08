@@ -5,6 +5,7 @@ import { sendOTP } from "@/services/email-services";
 import { LoginSchema, generateOTPCode, getOTPCodeByEmail, getUserByEmail, setUserAsVerified } from "@/services/login-services";
 import { createOTPSession } from "@/services/otpsession-services";
 import { AuthError } from "next-auth";
+import { revalidatePath } from "next/cache";
 import * as z from "zod";
 
 export type DeviceInfo = {
@@ -61,6 +62,8 @@ export async function loginAction(values: z.infer<typeof LoginSchema>, callbackU
         city: deviceInfo?.city,
         country: deviceInfo?.country
       })
+
+      revalidatePath("/admin/otpsessions")
 
       try {
         console.log("credentials", { email, code, otpSessionId: otpSession.id });
