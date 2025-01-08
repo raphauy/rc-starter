@@ -6,6 +6,7 @@ import { isYesterday } from "date-fns"
 import { isToday } from "date-fns"
 import { parseISO } from "date-fns"
 import { es } from "date-fns/locale";
+import { toZonedTime } from "date-fns-tz";
 
 export type MenuGroup = {
   name: string
@@ -34,16 +35,30 @@ export async function getCurrentUser() {
 }
 
 export function formatWhatsAppStyle(date: Date | string): string {
+  try {
+    const parsedDate = typeof date === 'string' ? parseISO(date) : date;
+    
+    if (isNaN(parsedDate.getTime())) {
+      throw new Error('Fecha inválida');
+    }
 
-  const parsedDate = typeof date === 'string' ? parseISO(date) : date;
+    const timezone = "America/Montevideo";
+    const uyTime = toZonedTime(parsedDate, timezone);
 
-  if (isToday(parsedDate)) {
-    return format(parsedDate, 'HH:mm');
-  } else if (isYesterday(parsedDate)) {
-    return 'Ayer';
-  } else if (isThisWeek(parsedDate)) {
-    return format(parsedDate, 'eeee', { locale: es });
-  } else {
-    return format(parsedDate, 'dd/MM/yyyy');
+    if (isToday(uyTime)) {
+      return format(uyTime, 'HH:mm');
+    } else if (isYesterday(uyTime)) {
+      return 'Ayer';
+    } else if (isThisWeek(uyTime)) {
+      return format(uyTime, 'eeee', { locale: es });
+    } else {
+      return format(uyTime, 'dd/MM/yyyy');
+    }
+  } catch (error) {
+    console.error('Error al formatear fecha:', error);
+    return 'Fecha inválida';
   }
 }
+
+
+

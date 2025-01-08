@@ -1,12 +1,13 @@
 "use client"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { formatWhatsAppStyle } from "@/lib/utils"
 import { OTPSessionDAO } from "@/services/otpsession-services"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
 import { format } from "date-fns"
+import { ArrowUpDown, Laptop, Smartphone } from "lucide-react"
 import { DeleteOTPSessionDialog, OTPSessionDialog } from "./otpsession-dialogs"
-import { formatWhatsAppStyle } from "@/lib/utils"
 
 
 export const columns: ColumnDef<OTPSessionDAO>[] = [
@@ -25,9 +26,15 @@ export const columns: ColumnDef<OTPSessionDAO>[] = [
     cell: ({ row }) => {
       const data= row.original
       return (
-        <div className="">
-          <p>{data.user.name}</p>
-          <p>{data.user.email}</p>
+        <div className="flex gap-2">
+          <Avatar>
+            <AvatarImage src={data.user.image || ""} className="object-cover"/>
+            <AvatarFallback>{data.user.name?.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div className="">
+            <p>{data.user.name}</p>
+            <p>{data.user.email}</p>
+          </div>
         </div>
       )
     }
@@ -46,9 +53,13 @@ export const columns: ColumnDef<OTPSessionDAO>[] = [
     cell: ({ row }) => {
       const data= row.original
       return (
-        <div className="">
-          <p>{data.deviceBrowser}</p>
-          <p>{data.deviceOs}</p>
+        <div className="flex items-center gap-2">
+          {isBrowserMobile(data.deviceBrowser || "") && <Smartphone className="w-8 h-8" />}
+          {!isBrowserMobile(data.deviceBrowser || "") && <Laptop className="w-8 h-8" />}
+          <div className="">
+            <p>{data.deviceOs}</p>
+            <p>{data.deviceBrowser}</p>
+          </div>
         </div>
       )
     }
@@ -89,12 +100,14 @@ export const columns: ColumnDef<OTPSessionDAO>[] = [
     )},
 		cell: ({ row }) => {
       const data= row.original
-      const expiration= data.tokenCheckExpiration ? format(data.tokenCheckExpiration, "dd/MM/yyyy HH:mm:ss") : "No disponible"
+      const isExpired= data.tokenCheckExpiration && data.tokenCheckExpiration < new Date()
+      const formatString= isExpired ? "dd/MM/yyyy HH:mm:ss" : "HH:mm"
+      const expiration= data.tokenCheckExpiration ? format(data.tokenCheckExpiration, formatString) : "No disponible"
       return (
         <div>
-          <p>Creado: {formatWhatsAppStyle(data.createdAt)}</p>
-          <p>Actualizado: {formatWhatsAppStyle(data.updatedAt)}</p>
-          <p>Expira: {expiration}</p>
+          <p>Creado: {formatWhatsAppStyle(data.createdAt.toISOString())}</p>
+          <p>Actualizado: {formatWhatsAppStyle(data.updatedAt.toISOString())}</p>
+          <p>Expira: <span className={`${isExpired ? "text-red-500" : "text-green-500"}`}>{expiration}</span></p>
         </div>
       )
     }
@@ -136,3 +149,7 @@ export const columns: ColumnDef<OTPSessionDAO>[] = [
 ]
 
 
+
+export function isBrowserMobile(userAgent: string) {
+  return userAgent.includes("Mobile")
+}
