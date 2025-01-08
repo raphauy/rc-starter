@@ -37,7 +37,20 @@ export const columns: ColumnDef<OTPSessionDAO>[] = [
           </div>
         </div>
       )
-    }
+    },
+    filterFn: (row, id, value) => {
+      const data = row.original
+      const valueLower = value.toLowerCase()
+      return !!(
+        data.user.name?.toLowerCase().includes(valueLower) || 
+        data.user.email?.toLowerCase().includes(valueLower) ||
+        data.city?.toLowerCase().includes(valueLower) ||
+        data.country?.toLowerCase().includes(valueLower) ||
+        data.ipAddress?.toLowerCase().includes(valueLower) ||
+        data.deviceOs?.toLowerCase().includes(valueLower) ||
+        data.deviceBrowser?.toLowerCase().includes(valueLower)
+      )
+    },
   },
   
   {

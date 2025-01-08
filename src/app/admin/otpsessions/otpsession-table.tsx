@@ -5,7 +5,7 @@ import { Table as TanstackTable } from "@tanstack/react-table"
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { X } from "lucide-react"
+import { Search, X } from "lucide-react"
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFacetedRowModel, getFacetedUniqueValues, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
 import { DataTablePagination } from "@/components/data-table/data-table-pagination"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -20,39 +20,25 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
   return (
     <div className="flex gap-1 dark:text-white items-center">
         
-          <Input className="max-w-xs" placeholder="deviceBrowser filter..."
-              value={(table.getColumn("device")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("device")?.setFilterValue(event.target.value)}                
-          />
-          
-      
-          <Input className="max-w-xs" placeholder="city filter..."
-              value={(table.getColumn("city")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("city")?.setFilterValue(event.target.value)}                
-          />
-          
-      
-          
-        {/* {table.getColumn("role") && roles && (
-          <DataTableFacetedFilter
-            column={table.getColumn("role")}
-            title="Rol"
-            options={roles}
-          />
-        )} */}
-        {isFiltered && (
-          <Button
-            variant="ghost"
-            onClick={() => table.resetColumnFilters()}
-            className="h-8 px-2 lg:px-3"
-          >
-            Reset
-            <X className="w-4 h-4 ml-2" />
-          </Button>
-        )}
-        <div className="flex-1 ">
-          <DataTableViewOptions table={table}/>
-        </div>
+      <div className="relative">
+        <Input className="max-w-xs"
+            value={(table.getColumn("user")?.getFilterValue() as string) ?? ""}
+            onChange={(event) => table.getColumn("user")?.setFilterValue(event.target.value)}                
+        />
+        <Search className="w-4 h-4 absolute right-2 top-1/2 -translate-y-1/2" />
+      </div>
+        
+    
+      {isFiltered && (
+        <Button
+          variant="ghost"
+          onClick={() => table.resetColumnFilters()}
+          className="h-8 px-2 lg:px-3"
+        >
+          Reset
+          <X className="w-4 h-4 ml-2" />
+        </Button>
+      )}
     </div>
   )
 }
