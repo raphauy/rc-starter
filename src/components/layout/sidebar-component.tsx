@@ -28,6 +28,7 @@ export function SidebarComponent() {
   }, [userRole, pathname])
 
   if (!menu) return <SidebarSkeleton />
+  //if (!menu) return null
 
   const handleMenuClick = () => {
     if (isMobile) {
@@ -45,7 +46,7 @@ export function SidebarComponent() {
       >
         <Menu />
       </Button>
-      <Sidebar variant="floating" collapsible="icon" className="top-[4rem] h-[calc(100vh-4rem)]">
+      <Sidebar variant="floating" collapsible="icon" className="top-[4rem] h-[calc(100svh-4rem)]">
         <SidebarHeader className="h-8 flex items-end mr-0.5">
           <SidebarTrigger />
         </SidebarHeader>
@@ -108,7 +109,7 @@ function getMenuItems(menuItems: MenuItem[], pathname: string, onMenuClick: () =
 
 function SidebarSkeleton() {
   return (
-    <div className="h-[calc(100vh-84px)] w-[16rem] ">
+    <div className="h-[calc(100svh-84px)] w-[16rem]">
       <div className="rounded-xl bg-gray-50 border mr-4 h-full">
         <SidebarHeader className="flex items-end mr-0.5">
           <Skeleton className="h-6 w-6" />
@@ -116,30 +117,30 @@ function SidebarSkeleton() {
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel>
-              <Skeleton className="h-4 w-[100px]" />
+              <Skeleton className="h-4 w-24" />
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuSkeleton showIcon />
+                  <SidebarMenuSkeleton className="w-[80%]" showIcon />
                 </SidebarMenuItem>
                 
                 <SidebarMenuItem>
-                  <SidebarMenuSkeleton showIcon />
+                  <SidebarMenuSkeleton className="w-[75%]" showIcon />
                 </SidebarMenuItem>
                 <SidebarMenuItem className="ml-4">
-                  <SidebarMenuSkeleton />
+                  <SidebarMenuSkeleton className="w-[70%]" />
                 </SidebarMenuItem>
                 <SidebarMenuItem className="ml-4">
-                  <SidebarMenuSkeleton />
+                  <SidebarMenuSkeleton className="w-[65%]" />
                 </SidebarMenuItem>
 
                 <SidebarMenuItem>
-                  <SidebarMenuSkeleton showIcon />
+                  <SidebarMenuSkeleton className="w-[85%]" showIcon />
                 </SidebarMenuItem>
 
                 <SidebarMenuItem>
-                  <SidebarMenuSkeleton showIcon />
+                  <SidebarMenuSkeleton className="w-[70%]" showIcon />
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
@@ -147,12 +148,12 @@ function SidebarSkeleton() {
 
           <SidebarGroup className="mt-4">
             <SidebarGroupLabel>
-              <Skeleton className="h-4 w-[80px]" />
+              <Skeleton className="h-4 w-20" />
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuSkeleton showIcon />
+                  <SidebarMenuSkeleton className="w-[75%]" showIcon />
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>

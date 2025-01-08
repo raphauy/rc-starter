@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <div className="min-h-screen h-full flex flex-col">
             <Header />
-            <main className="p-2 w-full h-[calc(100vh-65px)] overflow-hidden">
+            <main className="p-2 w-full h-[calc(100svh-65px)] overflow-hidden">
               {children}
             </main>
           </div>
