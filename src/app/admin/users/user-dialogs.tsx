@@ -23,8 +23,10 @@ export function UserDialog({ id }: Props) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{id ? 'Update' : 'Create'} User
-          </DialogTitle>
+          <DialogTitle>{id ? 'Update' : 'Create'} User</DialogTitle>
+          <DialogDescription>
+            {id ? 'Update the user information below.' : 'Enter the new user information below.'}
+          </DialogDescription>
         </DialogHeader>
         <UserForm closeDialog={() => setOpen(false)} id={id} />
       </DialogContent>

@@ -5,7 +5,7 @@ import { Table as TanstackTable } from "@tanstack/react-table"
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { X } from "lucide-react"
+import { Search, X } from "lucide-react"
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFacetedRowModel, getFacetedUniqueValues, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
 import { DataTablePagination } from "@/components/data-table/data-table-pagination"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -22,16 +22,13 @@ export function DataTableToolbar<TData>({ table, roles }: DataTableToolbarProps<
   return (
     <div className="flex gap-1 dark:text-white items-center">
         
-      <Input className="max-w-xs" placeholder="name filter..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}                
-      />
-      
-  
-      <Input className="max-w-xs" placeholder="email filter..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("email")?.setFilterValue(event.target.value)}                
-      />
+      <div className="relative">
+        <Input className="max-w-xs"
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}                
+        />
+        <Search className="w-4 h-4 absolute right-2 top-1/2 -translate-y-1/2" />
+      </div>
     
       {table.getColumn("role") && roles && (
         <DataTableFacetedFilter

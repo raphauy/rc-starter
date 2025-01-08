@@ -20,6 +20,14 @@ export const columns: ColumnDef<UserDAO>[] = [
             <ArrowUpDown className="w-4 h-4 ml-1" />
           </Button>
     )},
+    filterFn: (row, id, value) => {
+      const data = row.original
+      const valueLower = value.toLowerCase()
+      return !!(
+        data.name?.toLowerCase().includes(valueLower) ||
+        data.email?.toLowerCase().includes(valueLower)
+      )
+    },
   },
 
   {

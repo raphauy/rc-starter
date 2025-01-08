@@ -5,42 +5,32 @@ export const adminMenu: MenuGroup[] = [
   {
     name: "Administración",
     items: [
-    {
-      name: "Dashboard",
-      icon: <LayoutDashboard className="h-4 w-4" />,
-      href: "/admin",
-    },
-    {
-      name: "Usuarios",
-      icon: <Users className="h-4 w-4" />,
-      href: "/admin/users",
-      subItems:[
-        {
-          label: "Sesiones",
-          href: "/admin/otpsessions"
-        }
-      ]
-    },
-    {
-      name: "Empresas",
-      icon: <Building2 className="h-4 w-4" />,
-      href: "/admin/companies",
-    },
-    {
-      name: "Documentos",
-      icon: <FileText className="h-4 w-4" />,
-      href: "/admin/documents",
-    },
+      {
+        name: "Dashboard",
+        icon: <LayoutDashboard className="h-4 w-4" />,
+        href: "/admin",
+      },
+      {
+        name: "Usuarios",
+        icon: <Users className="h-4 w-4" />,
+        href: "/admin/users",
+        subItems:[
+          {
+            label: "Sesiones",
+            href: "/admin/otpsessions"
+          }
+        ]
+      },
     ],
   },
   {
     name: "Configuración",
     items: [
-    {
-      name: "Configuración",
-      icon: <Settings className="h-4 w-4" />,
-      href: "/admin/settings",
-    },
+      {
+        name: "Configuración",
+        icon: <Settings className="h-4 w-4" />,
+        href: "/admin/settings",
+      },
     ],
   },
 ]

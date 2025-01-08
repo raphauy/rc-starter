@@ -19,7 +19,14 @@ type Props= {
 export function OTPSessionForm({ id, closeDialog }: Props) {
   const form = useForm<OTPSessionFormValues>({
     resolver: zodResolver(oTPSessionSchema),
-    defaultValues: {},
+    defaultValues: {
+      userId: "",
+      deviceBrowser: "",
+      deviceOs: "",
+      ipAddress: "",
+      city: "",
+      country: "",
+    },
     mode: "onChange",
   })
   const [loading, setLoading] = useState(false)

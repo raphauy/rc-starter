@@ -12,9 +12,7 @@ export default async function OTPSessionPage() {
   return (
     <div className="w-full">      
 
-      <div className="flex justify-end mx-auto my-2">
-        <OTPSessionDialog />
-      </div>
+      <p className="text-2xl font-bold text-center mb-4">Sessions:</p>
 
       <div className="container bg-white p-3 py-4 mx-auto border rounded-md text-muted-foreground dark:text-white dark:bg-black">
         <DataTable columns={columns} data={data} subject="OTPSession"/>      

@@ -23,8 +23,10 @@ export function OTPSessionDialog({ id }: Props) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{id ? 'Update' : 'Create'} OTPSession
-          </DialogTitle>
+          <DialogTitle>{id ? 'Update' : 'Create'} OTPSession</DialogTitle>
+          <DialogDescription>
+            {id ? 'Update OTPSession.' : 'Create a new OTPSession.'}
+          </DialogDescription>
         </DialogHeader>
         <OTPSessionForm closeDialog={() => setOpen(false)} id={id} />
       </DialogContent>
