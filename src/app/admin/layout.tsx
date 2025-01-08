@@ -12,6 +12,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     return redirect("/login")
   }
 
+  console.log("session.expires", session.expires)
+  if (new Date(session.expires) < new Date()) {
+    return redirect("/login")
+  }
+
   if (session.user.role !== "ADMIN") {
     return redirect("/")
   }

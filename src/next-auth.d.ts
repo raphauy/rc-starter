@@ -22,6 +22,7 @@ declare module "next-auth" {
       name: string | null;
       email: string;
       image: string | null;
-    };
+    },
+    expires: string;
   }
 }
