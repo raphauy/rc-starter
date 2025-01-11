@@ -13,3 +13,4 @@ Starter point for RC projects
 - [Tailwind CSS](https://tailwindcss.com)
 - [Lucide Icons](https://lucide.dev)
 - [Tanstack](https://tanstack.com)
+
