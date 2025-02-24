@@ -6,7 +6,7 @@ import { Role } from "@prisma/client"
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 
-const TOKEN_SESSION_EXPIRATION_IN_MINUTES = 5
+const TOKEN_SESSION_EXPIRATION_IN_MINUTES = 15
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -27,11 +27,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const { email, code } = validatedFields.data
           const otpSessionId = (credentials as any).otpSessionId
           
-          const user = await getUserByEmail(email)
+          const user = await retryOnNeonSleep(() => getUserByEmail(email))
           
           if (!user || !user.email) return null
 
-          const oTPCode = await getOTPCodeByEmail(user.email)
+          const oTPCode = await retryOnNeonSleep(() => getOTPCodeByEmail(user.email))
 
           if (!oTPCode) {
             return null
@@ -41,7 +41,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return null
           }
 
-          await deleteOTPCode(oTPCode.id)
+          await retryOnNeonSleep(() => deleteOTPCode(oTPCode.id))
 
           // Guardar el otpSessionId en el token
           ;(user as any).otpSessionId = otpSessionId
@@ -55,24 +55,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async session({ token, session }) {
-      if (token.sub && session.user) {
-        session.user.id = token.sub;
-      }
-
-      if (token.role && session.user) {
-        session.user.role = token.role as Role;
-      }
-
       if (session.user) {
-        session.user.name = token.name
-        session.user.email = token.email as string
-        session.user.image = token.picture as string
+        session.user = {
+          ...session.user,
+          id: token.sub,
+          role: token.role as Role,
+          name: token.name,
+          email: token.email as string,
+          image: token.picture ?? null,
+        };
       }
 
       return session;
     },
     async jwt({ token, user, trigger}) {
       //console.log("token", token)
+
+      // const nodeEnv = process.env.NODE_ENV
+      // if (nodeEnv === "development") {
+      //   console.log("dev mode")
+      //   return token
+      // }
       
       if (!token.sub) return token
 
@@ -115,8 +118,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const tokenCheckExpiration = new Date(now.getTime() + TOKEN_SESSION_EXPIRATION_IN_MINUTES * 60 * 1000);
       console.log("Actualizando sesión, nueva expiración en", TOKEN_SESSION_EXPIRATION_IN_MINUTES, "minutos");
 
+      // Asegurarnos de que otpSessionId sea una cadena
+      const otpSessionId = token.otpSessionId as string;
+
       // Actualizar la expiración de la sesión actual
-      const res = await updateOTPSessionTokenCheckExpiration(token.otpSessionId, tokenCheckExpiration);
+      const res = await retryOnNeonSleep(() => updateOTPSessionTokenCheckExpiration(otpSessionId, tokenCheckExpiration));
       if (res) {
         console.log("actualizando tokenCheckExpiration", tokenCheckExpiration.toISOString())
         token.tokenCheckExpiration = tokenCheckExpiration.toISOString();                
@@ -126,16 +132,41 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return null;
       }
 
-      const existingUser = await getUserById(token.sub)      
+      const existingUser = await retryOnNeonSleep(() => getUserById(token.sub))      
       if (!existingUser) return token;
 
       // Siempre actualizamos los datos del usuario
       token.name = existingUser.name;
       token.email = existingUser.email;
       token.role = existingUser.role;
+      if (existingUser.wineCritic) {
+        token.wineCriticSlug = existingUser.wineCritic.slug;
+        token.wineCriticName = existingUser.wineCritic.name;
+      }
+      if (existingUser.winery) {
+        token.winerySlug = existingUser.winery.slug;
+        token.wineryName = existingUser.winery.name;
+      }
       token.picture = existingUser.image;
 
       return token;
     }
   }
 })
+
+
+async function retryOnNeonSleep(func: () => Promise<any>, retries = 1) {
+  console.log("reintentando conexión a Neon", retries)
+  try {
+    return await func()
+  } catch (error: any) {
+    if (
+      retries > 0 &&
+      error.code === "57P01" // Código de error de Neon cuando está dormido
+    ) {
+      console.warn("Neon está despertando, reintentando...")
+      return await retryOnNeonSleep(func, retries - 1)
+    }
+    throw error // Si no es un error de suspensión o no quedan reintentos, lanzar el error
+  }
+}
